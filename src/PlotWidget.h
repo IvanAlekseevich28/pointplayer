@@ -16,7 +16,8 @@ public slots:
     void reset();
 
 protected:
-    void paintEvent(QPaintEvent *event) override;
+    void paintEvent(QPaintEvent *) override;
+    void resizeEvent(QResizeEvent *) override;
 
 private:
     void drawAxes();

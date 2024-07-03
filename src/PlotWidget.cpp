@@ -19,17 +19,18 @@ void PlotWidget::reset() {
 void PlotWidget::paintEvent(QPaintEvent *event) {
     QPainter painter(this);
 
-    if (axesPixmap.isNull() || axesPixmap.size() != size()) {
+    if (axesPixmap.isNull()) {
         drawAxes();
     }
 
     painter.drawPixmap(0, 0, axesPixmap);
 
-    painter.setPen(Qt::black);
-    for (const auto &point : points) {
-        auto x = margin + point.x() * (width() - 2 * margin);
-        auto y = height() - (margin + point.y() * (height() - 2 * margin));
-        painter.drawEllipse(QPointF(x, y), pointSize, pointSize);
+    if (!points.empty()) {
+        painter.setPen(Qt::black);
+        auto point = points.back();
+        auto px = margin + point.x() * (width() - 2 * margin);
+        auto py = height() - (margin + point.y() * (height() - 2 * margin));
+        painter.drawEllipse(QPointF(px, py), pointSize, pointSize);
     }
 }
 
@@ -66,4 +67,12 @@ void PlotWidget::updatePoint(double x, double y) {
     auto py = height() - (margin + y * (height() - 2 * margin));
     painter.drawEllipse(QPointF(px, py), pointSize, pointSize);
     update(px - pointSize, py - pointSize, 2 * pointSize, 2 * pointSize);
+}
+
+void PlotWidget::resizeEvent(QResizeEvent *) {
+    drawAxes();
+    for (const auto &point : points) {
+        updatePoint(point.x(), point.y());
+    }
+    update();
 }
